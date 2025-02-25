@@ -143,6 +143,7 @@ func main() {
 			},
 		}
 	}
+	m["/"] = struct{}{}
 	err := os.Mkdir("."+string(filepath.Separator)+"web", 077)
 	if err != nil {
 		panic(err)
