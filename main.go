@@ -98,29 +98,32 @@ func get() {
 	}
 
 	// 获取所有a标签和link标签
-	add := func(i int, s *goquery.Selection) {
-		src, esixt := s.Attr("href")
-		if !esixt {
-			return
-		}
-		if src == "" {
-			return
-		}
-		if src[0] != '/' { //如果不是相对路径
-			return
-		}
-		l.Lock()
-		if _, ok := m[src]; ok { //如果是已知的路径
+	add := func(attr string) func(i int, s *goquery.Selection) {
+		return func(i int, s *goquery.Selection) {
+			src, esixt := s.Attr(attr)
+			if !esixt {
+				return
+			}
+			if src == "" {
+				return
+			}
+			if src[0] != '/' { //如果不是相对路径
+				return
+			}
+			l.Lock()
+			if _, ok := m[src]; ok { //如果是已知的路径
+				l.Unlock()
+				return
+			}
+			m[src] = struct{}{}
+			path = append(path, src)
 			l.Unlock()
-			return
+			fmt.Println(src)
 		}
-		m[src] = struct{}{}
-		path = append(path, src)
-		l.Unlock()
-		fmt.Println(src)
 	}
-	doc.Find("link").Each(add)
-	doc.Find("a").Each(add)
+	doc.Find("link").Each(add("href"))
+	doc.Find("a").Each(add("href"))
+	doc.Find("script").Each(add("src"))
 
 }
 
