@@ -81,7 +81,7 @@ func get() {
 		wp += ".html"
 	}
 
-	//如果保存页面失败，继续，因为当前页面的a标签和link标签可能包含前往网站其他页面的路径
+	//如果保存页面失败，继续，因为当前页面的a标签、link标签和script标签可能包含前往网站其他页面的路径
 	err = os.MkdirAll(filepath.Dir("."+string(filepath.Separator)+filepath.Join("web", wp)), 0777)
 	if err != nil {
 		fmt.Println(p, "保存页面失败", err)
@@ -97,7 +97,7 @@ func get() {
 		return
 	}
 
-	// 获取所有a标签和link标签
+	// 获取所有a标签、link标签和script标签
 	add := func(attr string) func(i int, s *goquery.Selection) {
 		return func(i int, s *goquery.Selection) {
 			src, esixt := s.Attr(attr)
@@ -107,6 +107,7 @@ func get() {
 			if src == "" {
 				return
 			}
+			//TODO:处理其他相对路径
 			if src[0] != '/' { //如果不是相对路径
 				return
 			}
